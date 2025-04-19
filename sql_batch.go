@@ -521,6 +521,8 @@ func main() {
 	// Create an XML decoder
 	decoder := xml.NewDecoder(xmlFileReader)
 
+	statistikCount := 0
+
 	// Open a connection to MySQL database
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/bilgaden_new_new")
 	db.SetMaxOpenConns(10)
@@ -3494,16 +3496,18 @@ func main() {
 				*/
 
 			}
-      if inBatch++; inBatch >= batchSize {
-          if err = tx.Commit(); err != nil {
-              log.Fatalf("commit tx: %v", err)
-          }
-          // start a fresh transaction
-          if tx, err = db.Begin(); err != nil {
-              log.Fatalf("begin tx: %v", err)
-          }
-          inBatch = 0
-      }
+		  if inBatch++; inBatch >= batchSize {
+			  if err = tx.Commit(); err != nil {
+				  log.Fatalf("commit tx: %v", err)
+			  }
+			  // start a fresh transaction
+			  if tx, err = db.Begin(); err != nil {
+				  log.Fatalf("begin tx: %v", err)
+			  }
+			  inBatch = 0
+			  statistikCount += 1000
+			  fmt.Println(statistikCount)
+		  }
 		}
 	}
 
