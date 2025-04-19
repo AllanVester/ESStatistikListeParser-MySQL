@@ -12,6 +12,7 @@ import (
 	"sync"
 	"strings"
 	"time"
+	"runtime"
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -523,7 +524,7 @@ func main() {
 	// Create an XML decoder
 	decoder := xml.NewDecoder(xmlFileReader)
 
-	statistikCount := 0
+	// statistikCount := 0
 
 	// Open a connection to MySQL database
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/bilgaden_new_new")
