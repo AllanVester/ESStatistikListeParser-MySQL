@@ -1,0 +1,116 @@
+name: MySQL Worker
+
+on:
+  workflow_dispatch:
+
+jobs:
+  mysql:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up MariaDB
+        uses: ankane/setup-mariadb@v1
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Import schema into MariaDB
+        run: |
+          /usr/bin/mariadb < "bilgaden_new_new_structure.sql"
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.21
+
+      - name: Install Go dependencies
+        run: go mod tidy
+
+      - name: Run sql.go
+        run: |
+          go run sql_worker.go
+          # rm -f "${{ github.workspace }}/$FILENAME"
+        
+      # - name: Maximize build space
+      #  uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
+      #  with:
+      #    #root-reserve-mb: 0
+      #    #temp-reserve-mb: 0
+      #    #swap-size-mb: 0
+      #    remove-dotnet: 'true' # fast, 0 seconds, saves 0 GB
+      #    remove-android: 'true' # slow, 1 minute, saves 6 GB
+      #    remove-haskell: 'true' # fast, 3 seconds, saves 6 GB
+      #    remove-codeql: 'true' # fast, 1 second, saves 4 GB
+      #    remove-docker-images: 'true' # fast, 0 seconds, saves 0 GB
+      #    
+      #    remove-large-packages: 'true' # very slow, 2 minutes, saves 6 GB
+      #    remove-cached-tools: 'true' # fast, 5 seconds, saves 8 GB. Includes Python
+      #    remove-swapfile: 'true' # fast, 0 seconds, saves 0 GB
+      #    #verbose: 'true'
+
+      #- name: Free Disk Space
+      #  uses: jlumbroso/free-disk-space@main
+      #  with:
+      #    tool-cache: true
+      #    android: true
+      #    dotnet: true
+      #    haskell: true
+      #    large-packages: true
+      #    docker-images: true
+      #    swap-storage: true
+          
+      - name: Checkout ESStatistikListeModtag
+        uses: actions/checkout@v4
+        with:
+          repository: "AllanVester/ESStatistikListeModtag"
+          path: "temp"
+          token: ${{ secrets.PAT }}
+
+      - name: Stitch Files Back Together
+        run: |
+          FIRST_PART=$(ls -1 ${{ github.workspace }}/temp/ESStatistikListeModtag/*.part* | head -n 1)
+          BASE_FILENAME=$(echo "$FIRST_PART" | sed 's/\.part.*//')
+          FILENAME=$(basename "$BASE_FILENAME")
+          FILENAME_NO_SUFFIX="${FILENAME%.*}"
+          echo "BASE_FILENAME=$BASE_FILENAME" >> $GITHUB_ENV
+          echo "FILENAME=$FILENAME" >> $GITHUB_ENV
+          echo "FILENAME_NO_SUFFIX=$FILENAME_NO_SUFFIX" >> $GITHUB_ENV
+
+          cat ${{ github.workspace }}/temp/ESStatistikListeModtag/*.part* > "$BASE_FILENAME"
+
+          mv "$BASE_FILENAME" "${{ github.workspace }}/"
+          
+          ls -lh "${{ github.workspace }}/$FILENAME" && file "${{ github.workspace }}/$FILENAME"
+          
+          rm -rf ${{ github.workspace }}/temp/
+
+      # - name: Dump the entire database
+      #   run: |
+      #     mongodump \
+      #       --host localhost --port 27017 \
+      #       -u admin -p admin --authenticationDatabase admin \
+      #       --db bilgaden \
+      #       --collection=dmr \
+      #       --gzip --out dump
+      #     find dump/bilgaden -type f ! -name 'dmr.bson.gz' -delete
+    
+      # - name: Archive dump directory with zip (500 MB slices)
+      #   run: |
+      #     mkdir -p mongodb-zip
+      #     zip -j -r -s 500m mongodb-zip/${FILENAME_NO_SUFFIX}.gz.zip dump/bilgaden
+
+      # - name: Split dump directory with zip (500 MB slices)
+      #   run: |
+      #     mkdir -p mongodb-split
+      #     split -d -b 500m dump/bilgaden/dmr.bson.gz mongodb-split/${FILENAME_NO_SUFFIX}.gz.part
+
+      # - name: Upload ZIP file to Discord
+      #   run: |
+      #     pip install pymongo discord-webhook
+      #     python UploadToDiscord.py mongodb
+      #   env:
+      #     FILENAME: "${{ env.FILENAME_NO_SUFFIX }}.gz"
