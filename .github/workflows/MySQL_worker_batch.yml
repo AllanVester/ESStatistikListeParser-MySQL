@@ -45,30 +45,30 @@ jobs:
       #    docker-images: true
       #    swap-storage: true
           
-      # - name: Checkout ESStatistikListeModtag
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: "AllanVester/ESStatistikListeModtag"
-      #     path: "temp"
-      #     token: ${{ secrets.PAT }}
+      - name: Checkout ESStatistikListeModtag
+        uses: actions/checkout@v4
+        with:
+          repository: "AllanVester/ESStatistikListeModtag"
+          path: "temp"
+          token: ${{ secrets.PAT }}
 
-      # - name: Stitch Files Back Together
-      #   run: |
-      #     FIRST_PART=$(ls -1 ${{ github.workspace }}/temp/ESStatistikListeModtag/*.part* | head -n 1)
-      #     BASE_FILENAME=$(echo "$FIRST_PART" | sed 's/\.part.*//')
-      #     FILENAME=$(basename "$BASE_FILENAME")
-      #     FILENAME_NO_SUFFIX="${FILENAME%.*}"
-      #     echo "BASE_FILENAME=$BASE_FILENAME" >> $GITHUB_ENV
-      #     echo "FILENAME=$FILENAME" >> $GITHUB_ENV
-      #     echo "FILENAME_NO_SUFFIX=$FILENAME_NO_SUFFIX" >> $GITHUB_ENV
+      - name: Stitch Files Back Together
+        run: |
+          FIRST_PART=$(ls -1 ${{ github.workspace }}/temp/ESStatistikListeModtag/*.part* | head -n 1)
+          BASE_FILENAME=$(echo "$FIRST_PART" | sed 's/\.part.*//')
+          FILENAME=$(basename "$BASE_FILENAME")
+          FILENAME_NO_SUFFIX="${FILENAME%.*}"
+          echo "BASE_FILENAME=$BASE_FILENAME" >> $GITHUB_ENV
+          echo "FILENAME=$FILENAME" >> $GITHUB_ENV
+          echo "FILENAME_NO_SUFFIX=$FILENAME_NO_SUFFIX" >> $GITHUB_ENV
 
-      #     cat ${{ github.workspace }}/temp/ESStatistikListeModtag/*.part* > "$BASE_FILENAME"
+          cat ${{ github.workspace }}/temp/ESStatistikListeModtag/*.part* > "$BASE_FILENAME"
 
-      #     mv "$BASE_FILENAME" "${{ github.workspace }}/"
+          mv "$BASE_FILENAME" "${{ github.workspace }}/"
           
-      #     ls -lh "${{ github.workspace }}/$FILENAME" && file "${{ github.workspace }}/$FILENAME"
+          ls -lh "${{ github.workspace }}/$FILENAME" && file "${{ github.workspace }}/$FILENAME"
           
-      #     rm -rf ${{ github.workspace }}/temp/
+          rm -rf ${{ github.workspace }}/temp/
 
       - name: Install Python
         uses: actions/setup-python@v5
