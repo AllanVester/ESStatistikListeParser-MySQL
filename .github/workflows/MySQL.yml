@@ -10,6 +10,9 @@ jobs:
       - name: Set up MariaDB
         uses: ankane/setup-mariadb@v1
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Import schema into MariaDB
         run: |
           mysql < "bilgaden_new_new_structure.sql"
@@ -41,9 +44,6 @@ jobs:
       #    large-packages: true
       #    docker-images: true
       #    swap-storage: true
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
           
       - name: Checkout ESStatistikListeModtag
         uses: actions/checkout@v4
