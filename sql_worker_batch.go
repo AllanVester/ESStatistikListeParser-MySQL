@@ -2088,7 +2088,7 @@ func main() {
   defer cancel()
 
   workerCount := runtime.NumCPU()
-  const batchSize = 1000
+  const batchSize = 100
 
   // 4) Channel + waitgroup
   statistikCh := make(chan Statistik, workerCount*2)
