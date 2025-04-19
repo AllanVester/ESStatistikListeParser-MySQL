@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  mongodb:
+  mysql:
     runs-on: ubuntu-latest
     steps:
       - name: Set up MariaDB
@@ -12,7 +12,7 @@ jobs:
 
       - name: Import schema into MariaDB
         run: |
-          mysql < "${{ github.workspace }}/bilgaden_new_new_structure.sql"
+          mysql < "bilgaden_new_new_structure.sql"
         
       # - name: Maximize build space
       #  uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
