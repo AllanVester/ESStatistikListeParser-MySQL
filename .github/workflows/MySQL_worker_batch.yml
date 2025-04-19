@@ -1,4 +1,4 @@
-name: MySQL Batch
+name: MySQL Worker Batch
 
 on:
   workflow_dispatch:
