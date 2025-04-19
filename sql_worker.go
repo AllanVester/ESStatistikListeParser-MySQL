@@ -482,6 +482,8 @@ type Statistik struct {
 
 func main() {
 
+	var total int64
+
 	// Open the ZIP file
 	zipFile, err := zip.OpenReader("ESStatistikListeModtag-20250413-184434.zip")
 	if err != nil {
@@ -3541,7 +3543,11 @@ func main() {
                         }
                     }
                 }
-            }
+				cnt := atomic.AddInt64(&total, 1)
+                if cnt%10000 == 0 {
+					fmt.Printf("\rRow inserted (%d/%d)", cnt, 13210571)
+                }
+			}	
         }()
     }
 
