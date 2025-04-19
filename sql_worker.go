@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	// "io/ioutil"
+	"sync"
 	"strings"
 	"time"
 
@@ -481,9 +482,6 @@ type Statistik struct {
 
 func main() {
 
-	// Start the timer
-	startTime := time.Now()
-  
 	// Open the ZIP file
 	zipFile, err := zip.OpenReader("ESStatistikListeModtag-20250413-184434.zip")
 	if err != nil {
@@ -520,11 +518,6 @@ func main() {
 
 	// Create an XML decoder
 	decoder := xml.NewDecoder(xmlFileReader)
-
-	// Create a counter to keep track of amount of <ns:Statistik> elements
-	statistikCount := 0
-
-	totalStatistikCount := 13210571
 
 	// Open a connection to MySQL database
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/bilgaden_new_new")
