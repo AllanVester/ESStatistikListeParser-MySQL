@@ -10,6 +10,7 @@ import (
 	// "io/ioutil"
 	"sync"
 	"sync/atomic"
+	"runtime"
 	"strings"
 	"time"
 
@@ -2079,13 +2080,14 @@ func main() {
 	}
 	defer koeretoejVariantTypeStatement.Close()
 
+    const workerCount = runtime.NumCPU()
+	
     // 1) Configure DB connection pool
-    db.SetMaxOpenConns(20)
-    db.SetMaxIdleConns(20)
+    db.SetMaxOpenConns(workerCount * 2)
+    db.SetMaxIdleConns(workerCount * 2)
 
     // 2) Create the channel & wait group
-    const workerCount = 8
-    statistikCh := make(chan Statistik, workerCount*2)
+    statistikCh := make(chan Statistik, workerCount * 2)
     var wg sync.WaitGroup
     wg.Add(workerCount)
 
