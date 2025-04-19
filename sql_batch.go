@@ -10,6 +10,7 @@ import (
 	// "io/ioutil"
 	"strings"
 	"time"
+	"log"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -487,7 +488,6 @@ func main() {
 	// Open the ZIP file
 	zipFile, err := zip.OpenReader("ESStatistikListeModtag-20250413-184434.zip")
 	if err != nil {
-
 		fmt.Println("Error opening ZIP file:", err)
 		return
 	}
@@ -520,11 +520,6 @@ func main() {
 
 	// Create an XML decoder
 	decoder := xml.NewDecoder(xmlFileReader)
-
-	// Create a counter to keep track of amount of <ns:Statistik> elements
-	statistikCount := 0
-
-	totalStatistikCount := 13210571
 
 	// Open a connection to MySQL database
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/bilgaden_new_new")
@@ -2083,15 +2078,15 @@ func main() {
 	}
 	defer koeretoejVariantTypeStatement.Close()
 
-  const batchSize = 1000               // tune this for your environment
-  var tx *sql.Tx
-  var err error
-  var inBatch int
+  	const batchSize = 1000               // tune this for your environment
+  	var tx *sql.Tx
+  	var inBatch int
 
-  // start the *very first* transaction
-  if tx, err = db.Begin(); err != nil {
-      log.Fatalf("begin tx: %v", err)
-  }
+  	// start the *very first* transaction
+  	if tx, err = db.Begin(); 
+	err != nil {
+		log.Fatalf("begin tx: %v", err)
+  	}
 
 	// Iterate over the XML elements
 	for {
