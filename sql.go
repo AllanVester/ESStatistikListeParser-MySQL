@@ -528,6 +528,9 @@ func main() {
 
 	// Open a connection to MySQL database
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/bilgaden_new_new")
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
+	db.SetConnMaxLifetime(time.Hour)
 	if err != nil {
 
 
