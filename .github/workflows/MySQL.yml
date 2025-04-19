@@ -15,7 +15,7 @@ jobs:
 
       - name: Import schema into MariaDB
         run: |
-          mysql < "bilgaden_new_new_structure.sql"
+          /usr/bin/mariadb < "bilgaden_new_new_structure.sql"
         
       # - name: Maximize build space
       #  uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
