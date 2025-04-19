@@ -10,6 +10,8 @@ import (
 	// "io/ioutil"
 	"strings"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 
