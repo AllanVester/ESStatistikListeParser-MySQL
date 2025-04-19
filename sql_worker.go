@@ -2080,7 +2080,7 @@ func main() {
 	}
 	defer koeretoejVariantTypeStatement.Close()
 
-    const workerCount = runtime.NumCPU()
+    workerCount := runtime.NumCPU()
 	
     // 1) Configure DB connection pool
     db.SetMaxOpenConns(workerCount * 2)
