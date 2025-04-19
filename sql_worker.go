@@ -2595,11 +2595,11 @@ func main() {
                         statistik.KoeretoejFastKombinationRegistreringNummerIdent != "NULL") {
 
                         if statistik.KoeretoejIdent != statistik.KoeretoejFastKombinationKoeretoejIdent {
-                            fmt.Printf(
-                                "\nstatistik.KoeretoejIdent:\n%s\ndoes not equal statistik.KoeretoejFastKombinationKoeretoejIdent:\n%s\n",
-                                statistik.KoeretoejIdent,
-                                statistik.KoeretoejFastKombinationKoeretoejIdent,
-                            )
+                            // fmt.Printf(
+                            //     "\nstatistik.KoeretoejIdent:\n%s\ndoes not equal statistik.KoeretoejFastKombinationKoeretoejIdent:\n%s\n",
+                            //     statistik.KoeretoejIdent,
+                            //     statistik.KoeretoejFastKombinationKoeretoejIdent,
+                            // )
                         }
 
                         _, err = koeretoejFastKombinationStatement.Exec(
@@ -3492,11 +3492,11 @@ func main() {
                             statistik.Tilladelse.TilladelseStruktur[i].VariabelKombinationKoeretoejOplysningStelNummer != "NULL") {
 
                             if (statistik.KoeretoejIdent != statistik.Tilladelse.TilladelseStruktur[i].VariabelKombinationKoeretoejIdent) {
-                                fmt.Printf(
-                                    "\nstatistik.KoeretoejIdent:\n%s\ndoes not equal statistik.Tilladelse.TilladelseStruktur[i].VariabelKombinationKoeretoejIdent:\n%s\n",
-                                    statistik.KoeretoejIdent,
-                                    statistik.Tilladelse.TilladelseStruktur[i].VariabelKombinationKoeretoejIdent,
-                                )
+                                // fmt.Printf(
+                                //     "\nstatistik.KoeretoejIdent:\n%s\ndoes not equal statistik.Tilladelse.TilladelseStruktur[i].VariabelKombinationKoeretoejIdent:\n%s\n",
+                                //     statistik.KoeretoejIdent,
+                                //     statistik.Tilladelse.TilladelseStruktur[i].VariabelKombinationKoeretoejIdent,
+                                // )
                             }
 
                             _, err = koeretoejTilladelseTypeVariabelKombinationStatement.Exec(
@@ -3522,11 +3522,11 @@ func main() {
                             statistik.Tilladelse.TilladelseStruktur[i].FastTilkoblingKoeretoejOplysningStelNummer != "NULL") {
 
                             if (statistik.KoeretoejIdent != statistik.Tilladelse.TilladelseStruktur[i].FastTilkoblingKoeretoejIdent) {
-                                fmt.Printf(
-                                    "\nstatistik.KoeretoejIdent:\n%s\ndoes not equal statistik.Tilladelse.TilladelseStruktur[i].FastTilkoblingKoeretoejIdent:\n%s\n",
-                                    statistik.KoeretoejIdent,
-                                    statistik.Tilladelse.TilladelseStruktur[i].FastTilkoblingKoeretoejIdent,
-                                )
+                                // fmt.Printf(
+                                //     "\nstatistik.KoeretoejIdent:\n%s\ndoes not equal statistik.Tilladelse.TilladelseStruktur[i].FastTilkoblingKoeretoejIdent:\n%s\n",
+                                //     statistik.KoeretoejIdent,
+                                //     statistik.Tilladelse.TilladelseStruktur[i].FastTilkoblingKoeretoejIdent,
+                                // )
                             }
                                 
                             _, err = koeretoejTilladelseTypeFastTilkoblingStatement.Exec(
