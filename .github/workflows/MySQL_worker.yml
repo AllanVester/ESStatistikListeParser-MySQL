@@ -16,24 +16,6 @@ jobs:
       - name: Import schema into MariaDB
         run: |
           /usr/bin/mariadb < "bilgaden_new_new_structure.sql"
-
-      - name: Install Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.21
-
-      - name: Install Go dependencies
-        run: go mod tidy
-
-      - name: Run sql.go
-        run: |
-          go run sql_worker.go
-          # rm -f "${{ github.workspace }}/$FILENAME"
         
       # - name: Maximize build space
       #  uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
@@ -87,6 +69,24 @@ jobs:
           ls -lh "${{ github.workspace }}/$FILENAME" && file "${{ github.workspace }}/$FILENAME"
           
           rm -rf ${{ github.workspace }}/temp/
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.21
+
+      - name: Install Go dependencies
+        run: go mod tidy
+
+      - name: Run sql.go
+        run: |
+          go run sql_worker.go
+          # rm -f "${{ github.workspace }}/$FILENAME"
 
       # - name: Dump the entire database
       #   run: |
