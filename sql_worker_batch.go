@@ -3,11 +3,13 @@ package main
 import (
 	"archive/zip"
 	"database/sql"
+	"context"
 	// "encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
 	// "io/ioutil"
+	"sync"
 	"strings"
 	"time"
 	"log"
@@ -2084,6 +2086,9 @@ func main() {
   ctx, cancel := context.WithCancel(context.Background())
   defer cancel()
 
+  workerCount := runtime.NumCPU()
+  const batchSize = 1000
+
   // 4) Channel + waitgroup
   statistikCh := make(chan Statistik, workerCount*2)
   var wg sync.WaitGroup
@@ -2130,9 +2135,9 @@ func main() {
 				  statistik.KoeretoejIdent = trimAndSetEmptyToNull(statistik.KoeretoejIdent)
 				  if (statistik.KoeretoejIdent != "NULL") {
 							  // bind the global stmt into this tx
-							if _, err := tx.StmtContext(ctx, koeretoejStmt).
+							if _, err := tx.StmtContext(ctx, koeretoejStatement).
 								ExecContext(ctx, statistik.KoeretoejIdent); err != nil {
-								fmt.Println("Error executing SQL koeretoejStmt:", err)
+								fmt.Println("Error executing SQL koeretoejStatement:", err)
 								cancel()
 								return
 							}
