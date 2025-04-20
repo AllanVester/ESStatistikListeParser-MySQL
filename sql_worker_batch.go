@@ -13,7 +13,7 @@ import (
 	"sync/atomic"
 	"strings"
 	"time"
-	"runtime"
+	// "runtime"
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -491,7 +491,7 @@ func main() {
 	// Start the timer
 	startTime := time.Now()
 
-	workerCount := runtime.NumCPU()
+	const workerCount = 16
   	const batchSize = 1000
 
 	// Open the ZIP file
