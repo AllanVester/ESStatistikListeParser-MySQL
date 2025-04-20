@@ -488,6 +488,9 @@ func main() {
 	// Start the timer
 	startTime := time.Now()
 
+    workerCount := runtime.NumCPU()
+  	const batchSize = 1000
+
 	// Open the ZIP file
 	zipFile, err := zip.OpenReader("ESStatistikListeModtag-20250413-184434.zip")
 	if err != nil {
@@ -528,8 +531,8 @@ func main() {
 
 	// Open a connection to MySQL database
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/bilgaden_new_new")
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
+	db.SetMaxOpenConns(workerCount * 2)
+	db.SetMaxIdleConns(workerCount * 2)
 	db.SetConnMaxLifetime(time.Hour)
 	if err != nil {
 
@@ -2087,9 +2090,6 @@ func main() {
   ctx, cancel := context.WithCancel(context.Background())
   defer cancel()
 
-  workerCount := runtime.NumCPU()
-  const batchSize = 10
-
   // 4) Channel + waitgroup
   statistikCh := make(chan Statistik, workerCount*2)
   var wg sync.WaitGroup
@@ -2139,8 +2139,6 @@ func main() {
 							if _, err := tx.StmtContext(ctx, koeretoejStatement).
 								ExecContext(ctx, statistik.KoeretoejIdent); err != nil {
 								fmt.Println("Error executing SQL koeretoejStatement:", err)
-								cancel()
-								return
 							}
 
 							  statistik.KoeretoejArtNavn = trimAndSetEmptyToNull(statistik.KoeretoejArtNavn) //YC
@@ -2174,8 +2172,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejArtStatement:", err)
-									  cancel()
-									return
 								  }
 							  }
 
@@ -2206,7 +2202,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejAnvendelseStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2239,7 +2234,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejAnvendelseSupplerendeStatement in for-loop:", err)
-										  return
 									  }
 								  }
 							  }
@@ -2283,7 +2277,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejLeasingStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2329,7 +2322,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejRegistreringNummerStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2363,7 +2355,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejRegistreringNummerRettighedStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2607,7 +2598,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejOplysningStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2637,7 +2627,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejFastKombinationStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2656,7 +2645,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejMaerkeTypeStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2675,7 +2663,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejModelTypeStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2694,7 +2681,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejTypeTypeStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2713,7 +2699,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejVariantTypeStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2732,7 +2717,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejFarveTypeStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2751,7 +2735,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejKarrosseriTypeStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2772,7 +2755,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejSupplerendeKarrosseriTypeStatement in for-loop:", err)
-										  return
 									  }
 								  }
 							  }
@@ -2792,7 +2774,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejNormTypeStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2847,7 +2828,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejMiljoeOplysningStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2866,7 +2846,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejCO2EmissionKlasseStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2966,7 +2945,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejMotorStatement:", err)
-									  return
 								  }
 							  }
 
@@ -2991,7 +2969,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejDrivmiddelStatement in for-loop:", err)
-										  return
 									  }
 								  }
 
@@ -3010,7 +2987,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejMaaleNormStatement in for-loop:", err)
-										  return
 									  }
 								  }
 
@@ -3029,7 +3005,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejDrivkraftTypeStatement in for-loop:", err)
-										  return
 									  }
 								  }
 
@@ -3060,7 +3035,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejBraendstofStatement in for-loop:", err)
-										  return
 									  }
 								  }
 
@@ -3085,7 +3059,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejElforbrugStatement in for-loop:", err)
-										  return
 									  }
 								  }
 							  }
@@ -3110,7 +3083,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejDispensationTypeStatement in for-loop:", err)
-										  return
 									  }
 								  }
 							  }
@@ -3150,7 +3122,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejUdstyrStatement in for-loop:", err)
-										  return
 									  }
 								  }
 							  }
@@ -3172,7 +3143,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejBlokeringAarsagStatement in for-loop:", err)
-										  return
 									  }
 								  }
 							  }
@@ -3195,7 +3165,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejPrisOplysningerStatement:", err)
-									  return
 								  }
 							  }
 
@@ -3214,7 +3183,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejGruppeStatement:", err)
-									  return
 								  }
 							  }
 
@@ -3233,7 +3201,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejUndergruppeStatement:", err)
-									  return
 								  }
 							  }
 
@@ -3318,7 +3285,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejAdresseStatement:", err)
-									  return
 								  }
 							  }
 							  */
@@ -3355,8 +3321,7 @@ func main() {
 									  statistik.SynResultatOmsynMoedeDato,
 								  )
 								  if err != nil {
-						fmt.Println("Error executing SQL koeretoejSynResultatStatement:", err)
-									  return
+									fmt.Println("Error executing SQL koeretoejSynResultatStatement:", err)
 								  }
 							  }
 
@@ -3401,7 +3366,6 @@ func main() {
 								  )
 								  if err != nil {
 									  fmt.Println("Error executing SQL koeretoejRegistreringStatement:", err)
-									  return
 								  }
 							  }
 
@@ -3434,7 +3398,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejTilladelseStatement in for-loop:", err)
-										  return
 									  }
 								  }
 
@@ -3459,7 +3422,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejTilladelseTypeStatement in for-loop:", err)
-										  return
 									  }
 								  }
 
@@ -3489,7 +3451,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejTilladelseTypeVariabelKombinationStatement in for-loop:", err)
-										  return
 									  }
 								  }
 
@@ -3516,7 +3477,6 @@ func main() {
 									  )
 									  if err != nil {
 										  fmt.Println("Error executing SQL koeretoejTilladelseTypeFastTilkoblingStatement in for-loop:", err)
-										  return
 									  }
 								  }
 							  }
