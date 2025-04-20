@@ -492,7 +492,7 @@ func main() {
   	const batchSize = 1000
 
 	// Open the ZIP file
-	zipFile, err := zip.OpenReader("ESStatistikListeModtag-20250413-184434.zip")
+	zipFile, err := zip.OpenReader("ESStatistikListeModtag-20250420-165437.zip")
 	if err != nil {
 		fmt.Println("Error opening ZIP file:", err)
 		return
