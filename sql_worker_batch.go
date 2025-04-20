@@ -3502,7 +3502,7 @@ func main() {
 						  return
 					  }
 					  inBatch = 0
-					  cnt := atomic.AddInt64(&total, 1)
+					  cnt := atomic.AddInt64(&total, batchSize)
 		              if cnt%batchSize == 0 {
 					      fmt.Printf("\rRow inserted (%d/%d)", cnt, 13217216)
 					  }
