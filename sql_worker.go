@@ -486,8 +486,10 @@ func main() {
 
 	var total int64
 
+	workerCount := 32
+
 	// Open the ZIP file
-	zipFile, err := zip.OpenReader("ESStatistikListeModtag-20250413-184434.zip")
+	zipFile, err := zip.OpenReader("ESStatistikListeModtag-20250420-165437.zip")
 	if err != nil {
 
 		fmt.Println("Error opening ZIP file:", err)
@@ -2079,8 +2081,6 @@ func main() {
 		return
 	}
 	defer koeretoejVariantTypeStatement.Close()
-
-    workerCount := runtime.NumCPU()
 	
     // 1) Configure DB connection pool
     db.SetMaxOpenConns(workerCount * 2)
