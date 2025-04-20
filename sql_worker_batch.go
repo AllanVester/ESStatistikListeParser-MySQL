@@ -485,10 +485,12 @@ type Statistik struct {
 
 func main() {
 
+	var total int64
+
 	// Start the timer
 	startTime := time.Now()
 
-    workerCount := runtime.NumCPU()
+	workerCount := runtime.NumCPU()
   	const batchSize = 1000
 
 	// Open the ZIP file
@@ -3499,6 +3501,10 @@ func main() {
 						  return
 					  }
 					  inBatch = 0
+					  cnt := atomic.AddInt64(&total, 1)
+		              if cnt%batchSize == 0 {
+					      fmt.Printf("\rRow inserted (%d/%d)", cnt, 13217216)
+					  }
 				  }
 			  }
 		  }
