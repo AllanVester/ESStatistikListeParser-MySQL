@@ -57,27 +57,27 @@ jobs:
 
       - name: Tune MariaDB for bulk loading (New)
         run: |
-          SET GLOBAL innodb_buffer_pool_size        = 14 * 1024 * 1024 * 1024;
-          SET GLOBAL innodb_buffer_pool_instances   = 8;
-          SET GLOBAL innodb_flush_log_at_trx_commit = 2;
-          SET GLOBAL innodb_log_file_size           = 1 * 1024 * 1024 * 1024;
-          SET GLOBAL innodb_log_buffer_size         = 64 * 1024 * 1024;
-          SET GLOBAL innodb_flush_method            = 'O_DIRECT';
-          SET GLOBAL innodb_io_capacity             = 2000;
-          SET GLOBAL innodb_io_capacity_max         = 4000;
+          mariadb -e "SET GLOBAL innodb_buffer_pool_size        = 14 * 1024 * 1024 * 1024;"
+          mariadb -e "SET GLOBAL innodb_buffer_pool_instances   = 8;"
+          mariadb -e "SET GLOBAL innodb_flush_log_at_trx_commit = 2;"
+          mariadb -e "SET GLOBAL innodb_log_file_size           = 1 * 1024 * 1024 * 1024;"
+          mariadb -e "SET GLOBAL innodb_log_buffer_size         = 64 * 1024 * 1024;"
+          mariadb -e "SET GLOBAL innodb_flush_method            = 'O_DIRECT';"
+          mariadb -e "SET GLOBAL innodb_io_capacity             = 2000;"
+          mariadb -e "SET GLOBAL innodb_io_capacity_max         = 4000;"
 
-          SET GLOBAL thread_cache_size       = 100;
-          SET GLOBAL table_open_cache        = 4000;
-          SET GLOBAL table_definition_cache  = 2000;
-          SET GLOBAL skip_name_resolve       = 1;
+          mariadb -e "SET GLOBAL thread_cache_size       = 100;"
+          mariadb -e "SET GLOBAL table_open_cache        = 4000;"
+          mariadb -e "SET GLOBAL table_definition_cache  = 2000;"
+          mariadb -e "SET GLOBAL skip_name_resolve       = 1;"
 
-          SET GLOBAL tmp_table_size          = 512 * 1024 * 1024;
-          SET GLOBAL max_heap_table_size     = 512 * 1024 * 1024;
-          SET GLOBAL sort_buffer_size        = 4 * 1024 * 1024;
-          SET GLOBAL join_buffer_size        = 8 * 1024 * 1024;
+          mariadb -e "SET GLOBAL tmp_table_size          = 512 * 1024 * 1024;"
+          mariadb -e "SET GLOBAL max_heap_table_size     = 512 * 1024 * 1024;"
+          mariadb -e "SET GLOBAL sort_buffer_size        = 4 * 1024 * 1024;"
+          mariadb -e "SET GLOBAL join_buffer_size        = 8 * 1024 * 1024;"
           
-          SET GLOBAL query_cache_type        = 0;
-          SET GLOBAL query_cache_size        = 0;
+          mariadb -e "SET GLOBAL query_cache_type        = 0;"
+          mariadb -e "SET GLOBAL query_cache_size        = 0;"
 
         
       - name: Maximize build space
