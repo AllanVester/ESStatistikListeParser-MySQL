@@ -7,6 +7,23 @@ jobs:
   mysql:
     runs-on: ubuntu-latest
     steps:
+      - name: Maximize build space
+        uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
+        with:
+      #    #root-reserve-mb: 0
+      #    #temp-reserve-mb: 0
+      #    #swap-size-mb: 0
+          remove-dotnet: 'true' # fast, 0 seconds, saves 0 GB
+          remove-android: 'true' # slow, 1 minute, saves 6 GB
+          remove-haskell: 'true' # fast, 3 seconds, saves 6 GB
+          remove-codeql: 'true' # fast, 1 second, saves 4 GB
+          remove-docker-images: 'true' # fast, 0 seconds, saves 0 GB
+          
+          remove-large-packages: 'true' # very slow, 2 minutes, saves 6 GB
+          remove-cached-tools: 'true' # fast, 5 seconds, saves 8 GB. Includes Python
+          remove-swapfile: 'true' # fast, 0 seconds, saves 0 GB
+      #    #verbose: 'true'
+      
       - name: Set up MariaDB
         uses: ankane/setup-mariadb@v1
 
@@ -17,22 +34,22 @@ jobs:
         run: |
           /usr/bin/mariadb < "bilgaden_new_new_structure.sql"
 
-      - name: Tune MariaDB for bulk loading
-        run: |
-          sudo tee /etc/mysql/mariadb.conf.d/99-bulk.cnf <<EOF
-          [mysqld]
-          # relax durability just for the load
-          innodb_flush_log_at_trx_commit=2
-          sync_binlog=0
-          # give InnoDB a healthy buffer to play with
-          innodb_buffer_pool_size=2G
-          EOF
-          sudo systemctl restart mariadb
+      # - name: Tune MariaDB for bulk loading
+      #   run: |
+      #     sudo tee /etc/mysql/mariadb.conf.d/99-bulk.cnf <<EOF
+      #     [mysqld]
+      #     # relax durability just for the load
+      #     innodb_flush_log_at_trx_commit=2
+      #     sync_binlog=0
+      #     # give InnoDB a healthy buffer to play with
+      #     innodb_buffer_pool_size=2G
+      #     EOF
+      #     sudo systemctl restart mariadb
 
-      - name: Disable foreign‑key & unique checks
-        run: |
-          mariadb -e "SET GLOBAL foreign_key_checks=0;"
-          mariadb -e "SET GLOBAL unique_checks=0;"
+      # - name: Disable foreign‑key & unique checks
+      #   run: |
+      #     mariadb -e "SET GLOBAL foreign_key_checks=0;"
+      #     mariadb -e "SET GLOBAL unique_checks=0;"
         
       # - name: Maximize build space
       #  uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
