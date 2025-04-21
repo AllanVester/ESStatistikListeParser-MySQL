@@ -46,10 +46,10 @@ jobs:
       #     EOF
       #     sudo systemctl restart mariadb
 
-      # - name: Disable foreign‑key & unique checks
-      #   run: |
-      #     mariadb -e "SET GLOBAL foreign_key_checks=0;"
-      #     mariadb -e "SET GLOBAL unique_checks=0;"
+      - name: Disable foreign‑key & unique checks
+        run: |
+          mariadb -e "SET GLOBAL foreign_key_checks=0;"
+          mariadb -e "SET GLOBAL unique_checks=0;"
         
       - name: Maximize build space
         uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
