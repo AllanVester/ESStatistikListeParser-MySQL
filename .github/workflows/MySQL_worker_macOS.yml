@@ -55,6 +55,10 @@ jobs:
           mariadb -e "SET GLOBAL innodb_buffer_pool_size = 14 * 1024 * 1024 * 1024;"
           #mariadb -e "SET GLOBAL foreign_key_checks=0;"
           #mariadb -e "SET GLOBAL unique_checks=0;"
+
+      - name: Configure MariaDB root user
+        run: |
+          sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '';"
         
       # - name: Maximize build space
       #   uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
