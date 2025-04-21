@@ -32,7 +32,7 @@ jobs:
 
       - name: Test RAM
         run: |
-          free -g
+          free
 
       - name: Import schema into MariaDB
         run: |
@@ -46,7 +46,7 @@ jobs:
           # innodb_flush_log_at_trx_commit=2
           # sync_binlog=0
           # give InnoDB a healthy buffer to play with
-          innodb_buffer_pool_size=10G
+          innodb_buffer_pool_size=14G
           EOF
           sudo systemctl restart mariadb
 
