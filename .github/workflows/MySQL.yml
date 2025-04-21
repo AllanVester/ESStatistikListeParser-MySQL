@@ -17,22 +17,46 @@ jobs:
         run: |
           /usr/bin/mariadb < "bilgaden_new_new_structure.sql"
         
-      # - name: Maximize build space
-      #  uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
-      #  with:
-      #    #root-reserve-mb: 0
-      #    #temp-reserve-mb: 0
-      #    #swap-size-mb: 0
-      #    remove-dotnet: 'true' # fast, 0 seconds, saves 0 GB
-      #    remove-android: 'true' # slow, 1 minute, saves 6 GB
-      #    remove-haskell: 'true' # fast, 3 seconds, saves 6 GB
-      #    remove-codeql: 'true' # fast, 1 second, saves 4 GB
-      #    remove-docker-images: 'true' # fast, 0 seconds, saves 0 GB
-      #    
-      #    remove-large-packages: 'true' # very slow, 2 minutes, saves 6 GB
-      #    remove-cached-tools: 'true' # fast, 5 seconds, saves 8 GB. Includes Python
-      #    remove-swapfile: 'true' # fast, 0 seconds, saves 0 GB
-      #    #verbose: 'true'
+      - name: Tune MariaDB for bulk loading (New)
+        run: |
+          sudo mariadb -e "SET GLOBAL innodb_buffer_pool_size        = 14 * 1024 * 1024 * 1024;"
+          # #sudo mariadb -e "SET GLOBAL innodb_buffer_pool_instances   = 8;"
+          # sudo mariadb -e "SET GLOBAL innodb_flush_log_at_trx_commit = 2;"
+          # sudo mariadb -e "SET GLOBAL innodb_log_file_size           = 1 * 1024 * 1024 * 1024;"
+          # #sudo mariadb -e "SET GLOBAL innodb_log_buffer_size         = 64 * 1024 * 1024;"
+          # #sudo mariadb -e "SET GLOBAL innodb_flush_method            = 'O_DIRECT';"
+          # sudo mariadb -e "SET GLOBAL innodb_io_capacity             = 2000;"
+          # sudo mariadb -e "SET GLOBAL innodb_io_capacity_max         = 4000;"
+
+          # sudo mariadb -e "SET GLOBAL thread_cache_size       = 100;"
+          # sudo mariadb -e "SET GLOBAL table_open_cache        = 4000;"
+          # sudo mariadb -e "SET GLOBAL table_definition_cache  = 2000;"
+          # #sudo mariadb -e "SET GLOBAL skip_name_resolve       = 1;"
+
+          # sudo mariadb -e "SET GLOBAL tmp_table_size          = 512 * 1024 * 1024;"
+          # sudo mariadb -e "SET GLOBAL max_heap_table_size     = 512 * 1024 * 1024;"
+          # sudo mariadb -e "SET GLOBAL sort_buffer_size        = 4 * 1024 * 1024;"
+          # sudo mariadb -e "SET GLOBAL join_buffer_size        = 8 * 1024 * 1024;"
+          
+          # sudo mariadb -e "SET GLOBAL query_cache_type        = 0;"
+          # sudo mariadb -e "SET GLOBAL query_cache_size        = 0;"
+
+      - name: Maximize build space
+        uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
+        with:
+         #root-reserve-mb: 0
+         #temp-reserve-mb: 0
+         #swap-size-mb: 0
+         remove-dotnet: 'true' # fast, 0 seconds, saves 0 GB
+         remove-android: 'true' # slow, 1 minute, saves 6 GB
+         remove-haskell: 'true' # fast, 3 seconds, saves 6 GB
+         remove-codeql: 'true' # fast, 1 second, saves 4 GB
+         remove-docker-images: 'true' # fast, 0 seconds, saves 0 GB
+         
+      #   #remove-large-packages: 'true' # very slow, 2 minutes, saves 6 GB
+         remove-cached-tools: 'true' # fast, 5 seconds, saves 8 GB. Includes Python
+         remove-swapfile: 'true' # fast, 0 seconds, saves 0 GB
+         #verbose: 'true'
 
       #- name: Free Disk Space
       #  uses: jlumbroso/free-disk-space@main
