@@ -38,22 +38,47 @@ jobs:
         run: |
           /usr/bin/mariadb < "bilgaden_new_new_structure.sql"
 
-      - name: Tune MariaDB for bulk loading
-        run: |
-          sudo tee /etc/mysql/mariadb.conf.d/99-bulk.cnf <<EOF
-          [mysqld]
-          # relax durability just for the load
-          # innodb_flush_log_at_trx_commit=2
-          # sync_binlog=0
-          # give InnoDB a healthy buffer to play with
-          innodb_buffer_pool_size=14G
-          EOF
-          sudo systemctl restart mariadb
+      # - name: Tune MariaDB for bulk loading
+      #   run: |
+      #     sudo tee /etc/mysql/mariadb.conf.d/99-bulk.cnf <<EOF
+      #     [mysqld]
+      #     # relax durability just for the load
+      #     # innodb_flush_log_at_trx_commit=2
+      #     # sync_binlog=0
+      #     # give InnoDB a healthy buffer to play with
+      #     innodb_buffer_pool_size=14G
+      #     EOF
+      #     sudo systemctl restart mariadb
 
       # - name: Disable foreign‑key & unique checks
       #   run: |
       #     mariadb -e "SET GLOBAL foreign_key_checks=0;"
       #     mariadb -e "SET GLOBAL unique_checks=0;"
+
+      - name: Tune MariaDB for bulk loading (New)
+        run: |
+          SET GLOBAL innodb_buffer_pool_size        = 14 * 1024 * 1024 * 1024;
+          SET GLOBAL innodb_buffer_pool_instances   = 8;
+          SET GLOBAL innodb_flush_log_at_trx_commit = 2;
+          SET GLOBAL innodb_log_file_size           = 1 * 1024 * 1024 * 1024;
+          SET GLOBAL innodb_log_buffer_size         = 64 * 1024 * 1024;
+          SET GLOBAL innodb_flush_method            = 'O_DIRECT';
+          SET GLOBAL innodb_io_capacity             = 2000;
+          SET GLOBAL innodb_io_capacity_max         = 4000;
+
+          SET GLOBAL thread_cache_size       = 100;
+          SET GLOBAL table_open_cache        = 4000;
+          SET GLOBAL table_definition_cache  = 2000;
+          SET GLOBAL skip_name_resolve       = 1;
+
+          SET GLOBAL tmp_table_size          = 512 * 1024 * 1024;
+          SET GLOBAL max_heap_table_size     = 512 * 1024 * 1024;
+          SET GLOBAL sort_buffer_size        = 4 * 1024 * 1024;
+          SET GLOBAL join_buffer_size        = 8 * 1024 * 1024;
+          
+          SET GLOBAL query_cache_type        = 0;
+          SET GLOBAL query_cache_size        = 0;
+
         
       - name: Maximize build space
         uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
