@@ -63,7 +63,7 @@ jobs:
          remove-codeql: 'true' # fast, 1 second, saves 4 GB
          remove-docker-images: 'true' # fast, 0 seconds, saves 0 GB
          
-         remove-large-packages: 'true' # very slow, 2 minutes, saves 6 GB
+      #   #remove-large-packages: 'true' # very slow, 2 minutes, saves 6 GB
          remove-cached-tools: 'true' # fast, 5 seconds, saves 8 GB. Includes Python
          remove-swapfile: 'true' # fast, 0 seconds, saves 0 GB
          #verbose: 'true'
