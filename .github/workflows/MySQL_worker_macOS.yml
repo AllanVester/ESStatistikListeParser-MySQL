@@ -1,4 +1,4 @@
-name: MySQL Worker
+name: MySQL Worker macOS
 
 on:
   workflow_dispatch:
