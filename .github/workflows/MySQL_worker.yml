@@ -163,7 +163,7 @@ jobs:
       - name: Split dump directory with zip (500 MB slices)
         run: |
           mkdir -p ${{ github.workspace }}/mysql-split
-          split -d -b 500m ${{ github.workspace }}/bilgaden_new_new.sql.gz mysql-split/${FILENAME_NO_SUFFIX}.sql.gz.part
+          split -d -b 500m ${{ github.workspace }}/bilgaden_new_new.sql.gz ${{ github.workspace }}/mysql-split/${FILENAME_NO_SUFFIX}.sql.gz.part
           df -h
 
       - name: Upload ZIP file to Discord
