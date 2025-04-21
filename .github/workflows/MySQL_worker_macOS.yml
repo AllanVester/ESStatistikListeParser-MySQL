@@ -36,24 +36,25 @@ jobs:
 
       - name: Import schema into MariaDB
         run: |
-          mysql < "bilgaden_new_new_structure.sql"
+          mariadb < "bilgaden_new_new_structure.sql"
 
-      - name: Tune MariaDB for bulk loading
-        run: |
-          sudo tee /etc/mysql/mariadb.conf.d/99-bulk.cnf <<EOF
-          [mysqld]
-          # relax durability just for the load
-          # innodb_flush_log_at_trx_commit=2
-          # sync_binlog=0
-          # give InnoDB a healthy buffer to play with
-          innodb_buffer_pool_size=14G
-          EOF
-          sudo systemctl restart mariadb
-
-      # - name: Disable foreign‑key & unique checks
+      # - name: Tune MariaDB for bulk loading
       #   run: |
-      #     mariadb -e "SET GLOBAL foreign_key_checks=0;"
-      #     mariadb -e "SET GLOBAL unique_checks=0;"
+      #     sudo tee /etc/mysql/mariadb.conf.d/99-bulk.cnf <<EOF
+      #     [mysqld]
+      #     # relax durability just for the load
+      #     # innodb_flush_log_at_trx_commit=2
+      #     # sync_binlog=0
+      #     # give InnoDB a healthy buffer to play with
+      #     innodb_buffer_pool_size=14G
+      #     EOF
+      #     sudo systemctl restart mariadb
+
+      - name: Disable foreign‑key & unique checks
+        run: |
+          mariadb -e "SET GLOBAL innodb_buffer_pool_size=14G;"
+          #mariadb -e "SET GLOBAL foreign_key_checks=0;"
+          #mariadb -e "SET GLOBAL unique_checks=0;"
         
       # - name: Maximize build space
       #   uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
