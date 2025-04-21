@@ -485,7 +485,7 @@ func main() {
 	startTime := time.Now()
   
 	// Open the ZIP file
-	zipFile, err := zip.OpenReader("ESStatistikListeModtag-20250413-184434.zip")
+	zipFile, err := zip.OpenReader("ESStatistikListeModtag-20250420-165437.zip")
 	if err != nil {
 
 		fmt.Println("Error opening ZIP file:", err)
@@ -524,7 +524,7 @@ func main() {
 	// Create a counter to keep track of amount of <ns:Statistik> elements
 	statistikCount := 0
 
-	totalStatistikCount := 13210571
+	totalStatistikCount := 13217216
 
 	// Open a connection to MySQL database
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/bilgaden_new_new")
