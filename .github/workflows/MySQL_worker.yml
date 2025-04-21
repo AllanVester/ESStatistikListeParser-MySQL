@@ -38,6 +38,12 @@ jobs:
         run: |
           /usr/bin/mariadb < "bilgaden_new_new_structure.sql"
 
+      - name: Dump the entire database
+        run: |
+          sudo mysqldump --databases bilgaden_new_new | gzip > dump.sql.gz
+          df -h
+          ls -lh
+
       # - name: Tune MariaDB for bulk loading
       #   run: |
       #     sudo tee /etc/mysql/mariadb.conf.d/99-bulk.cnf <<EOF
@@ -58,26 +64,26 @@ jobs:
       - name: Tune MariaDB for bulk loading (New)
         run: |
           sudo mariadb -e "SET GLOBAL innodb_buffer_pool_size        = 14 * 1024 * 1024 * 1024;"
-          #sudo mariadb -e "SET GLOBAL innodb_buffer_pool_instances   = 8;"
-          sudo mariadb -e "SET GLOBAL innodb_flush_log_at_trx_commit = 2;"
-          sudo mariadb -e "SET GLOBAL innodb_log_file_size           = 1 * 1024 * 1024 * 1024;"
-          #sudo mariadb -e "SET GLOBAL innodb_log_buffer_size         = 64 * 1024 * 1024;"
-          #sudo mariadb -e "SET GLOBAL innodb_flush_method            = 'O_DIRECT';"
-          sudo mariadb -e "SET GLOBAL innodb_io_capacity             = 2000;"
-          sudo mariadb -e "SET GLOBAL innodb_io_capacity_max         = 4000;"
+          # #sudo mariadb -e "SET GLOBAL innodb_buffer_pool_instances   = 8;"
+          # sudo mariadb -e "SET GLOBAL innodb_flush_log_at_trx_commit = 2;"
+          # sudo mariadb -e "SET GLOBAL innodb_log_file_size           = 1 * 1024 * 1024 * 1024;"
+          # #sudo mariadb -e "SET GLOBAL innodb_log_buffer_size         = 64 * 1024 * 1024;"
+          # #sudo mariadb -e "SET GLOBAL innodb_flush_method            = 'O_DIRECT';"
+          # sudo mariadb -e "SET GLOBAL innodb_io_capacity             = 2000;"
+          # sudo mariadb -e "SET GLOBAL innodb_io_capacity_max         = 4000;"
 
-          sudo mariadb -e "SET GLOBAL thread_cache_size       = 100;"
-          sudo mariadb -e "SET GLOBAL table_open_cache        = 4000;"
-          sudo mariadb -e "SET GLOBAL table_definition_cache  = 2000;"
-          #sudo mariadb -e "SET GLOBAL skip_name_resolve       = 1;"
+          # sudo mariadb -e "SET GLOBAL thread_cache_size       = 100;"
+          # sudo mariadb -e "SET GLOBAL table_open_cache        = 4000;"
+          # sudo mariadb -e "SET GLOBAL table_definition_cache  = 2000;"
+          # #sudo mariadb -e "SET GLOBAL skip_name_resolve       = 1;"
 
-          sudo mariadb -e "SET GLOBAL tmp_table_size          = 512 * 1024 * 1024;"
-          sudo mariadb -e "SET GLOBAL max_heap_table_size     = 512 * 1024 * 1024;"
-          sudo mariadb -e "SET GLOBAL sort_buffer_size        = 4 * 1024 * 1024;"
-          sudo mariadb -e "SET GLOBAL join_buffer_size        = 8 * 1024 * 1024;"
+          # sudo mariadb -e "SET GLOBAL tmp_table_size          = 512 * 1024 * 1024;"
+          # sudo mariadb -e "SET GLOBAL max_heap_table_size     = 512 * 1024 * 1024;"
+          # sudo mariadb -e "SET GLOBAL sort_buffer_size        = 4 * 1024 * 1024;"
+          # sudo mariadb -e "SET GLOBAL join_buffer_size        = 8 * 1024 * 1024;"
           
-          sudo mariadb -e "SET GLOBAL query_cache_type        = 0;"
-          sudo mariadb -e "SET GLOBAL query_cache_size        = 0;"
+          # sudo mariadb -e "SET GLOBAL query_cache_type        = 0;"
+          # sudo mariadb -e "SET GLOBAL query_cache_size        = 0;"
 
       - name: Maximize build space
         uses: AdityaGarg8/remove-unwanted-software@v5 # ublue-os/remove-unwanted-software@v8 # easimon/maximize-build-space@master
@@ -145,20 +151,18 @@ jobs:
       - name: Install Go dependencies
         run: go mod tidy
 
-      - name: Run sql.go
+      - name: Run sql_worker.go
         run: |
           go run sql_worker.go
-          # rm -f "${{ github.workspace }}/$FILENAME"
+          df -h
+          rm -f "${{ github.workspace }}/$FILENAME"
+          df -h
 
-      # - name: Dump the entire database
-      #   run: |
-      #     mongodump \
-      #       --host localhost --port 27017 \
-      #       -u admin -p admin --authenticationDatabase admin \
-      #       --db bilgaden \
-      #       --collection=dmr \
-      #       --gzip --out dump
-      #     find dump/bilgaden -type f ! -name 'dmr.bson.gz' -delete
+      - name: Dump the entire database
+        run: |
+          sudo mysqldump --databases bilgaden_new_new | gzip > dump.sql.gz
+          df -h
+          ls -lh
     
       # - name: Archive dump directory with zip (500 MB slices)
       #   run: |
