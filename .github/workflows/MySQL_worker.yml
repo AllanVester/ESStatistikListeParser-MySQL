@@ -34,17 +34,17 @@ jobs:
         run: |
           /usr/bin/mariadb < "bilgaden_new_new_structure.sql"
 
-      # - name: Tune MariaDB for bulk loading
-      #   run: |
-      #     sudo tee /etc/mysql/mariadb.conf.d/99-bulk.cnf <<EOF
-      #     [mysqld]
-      #     # relax durability just for the load
-      #     innodb_flush_log_at_trx_commit=2
-      #     sync_binlog=0
-      #     # give InnoDB a healthy buffer to play with
-      #     innodb_buffer_pool_size=2G
-      #     EOF
-      #     sudo systemctl restart mariadb
+      - name: Tune MariaDB for bulk loading
+        run: |
+          sudo tee /etc/mysql/mariadb.conf.d/99-bulk.cnf <<EOF
+          [mysqld]
+          # relax durability just for the load
+          # innodb_flush_log_at_trx_commit=2
+          sync_binlog=0
+          # give InnoDB a healthy buffer to play with
+          innodb_buffer_pool_size=2G
+          EOF
+          sudo systemctl restart mariadb
 
       - name: Disable foreign‑key & unique checks
         run: |
