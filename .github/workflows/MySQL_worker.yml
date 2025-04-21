@@ -29,20 +29,10 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Test RAM
-        run: |
-          free
-
+        
       - name: Import schema into MariaDB
         run: |
           /usr/bin/mariadb < "bilgaden_new_new_structure.sql"
-
-      - name: Dump the entire database
-        run: |
-          sudo mysqldump --databases bilgaden_new_new | gzip > dump.sql.gz
-          df -h
-          ls -lh
 
       # - name: Tune MariaDB for bulk loading
       #   run: |
@@ -160,23 +150,25 @@ jobs:
 
       - name: Dump the entire database
         run: |
-          sudo mysqldump --databases bilgaden_new_new | gzip > dump.sql.gz
+          /usr/bin/mariadb-dump --databases bilgaden_new_new | gzip > ${{ github.workspace }}/bilgaden_new_new.sql.gz
           df -h
           ls -lh
     
-      # - name: Archive dump directory with zip (500 MB slices)
-      #   run: |
-      #     mkdir -p mongodb-zip
-      #     zip -j -r -s 500m mongodb-zip/${FILENAME_NO_SUFFIX}.gz.zip dump/bilgaden
+      - name: Archive dump directory with zip (500 MB slices)
+        run: |
+          mkdir -p ${{ github.workspace }}/mysql-zip
+          zip -j -r -s 500m ${{ github.workspace }}/mysql-zip/${FILENAME_NO_SUFFIX}.sql.gz.zip ${{ github.workspace }}/bilgaden_new_new.sql.gz
+          df -h
 
-      # - name: Split dump directory with zip (500 MB slices)
-      #   run: |
-      #     mkdir -p mongodb-split
-      #     split -d -b 500m dump/bilgaden/dmr.bson.gz mongodb-split/${FILENAME_NO_SUFFIX}.gz.part
+      - name: Split dump directory with zip (500 MB slices)
+        run: |
+          mkdir -p ${{ github.workspace }}/mysql-split
+          split -d -b 500m ${{ github.workspace }}/bilgaden_new_new.sql.gz mysql-split/${FILENAME_NO_SUFFIX}.sql.gz.part
+          df -h
 
-      # - name: Upload ZIP file to Discord
-      #   run: |
-      #     pip install pymongo discord-webhook
-      #     python UploadToDiscord.py mongodb
-      #   env:
-      #     FILENAME: "${{ env.FILENAME_NO_SUFFIX }}.gz"
+      - name: Upload ZIP file to Discord
+        run: |
+          pip install pymongo discord-webhook
+          python ${{ github.workspace }}/UploadToDiscord.py mysql
+        env:
+          FILENAME: "${{ env.FILENAME_NO_SUFFIX }}.sql.gz"
