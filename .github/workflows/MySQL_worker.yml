@@ -30,6 +30,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Test RAM
+        run: |
+          free -g
+
       - name: Import schema into MariaDB
         run: |
           /usr/bin/mariadb < "bilgaden_new_new_structure.sql"
