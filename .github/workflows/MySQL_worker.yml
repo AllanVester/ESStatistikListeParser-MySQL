@@ -69,7 +69,7 @@ jobs:
           sudo mariadb -e "SET GLOBAL thread_cache_size       = 100;"
           sudo mariadb -e "SET GLOBAL table_open_cache        = 4000;"
           sudo mariadb -e "SET GLOBAL table_definition_cache  = 2000;"
-          sudo mariadb -e "SET GLOBAL skip_name_resolve       = 1;"
+          #sudo mariadb -e "SET GLOBAL skip_name_resolve       = 1;"
 
           sudo mariadb -e "SET GLOBAL tmp_table_size          = 512 * 1024 * 1024;"
           sudo mariadb -e "SET GLOBAL max_heap_table_size     = 512 * 1024 * 1024;"
