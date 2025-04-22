@@ -486,7 +486,7 @@ func main() {
 
 	var total int64
 
-	workerCount := runtime.NumCPU() * 2
+	workerCount := runtime.NumCPU() ** 2
 	fmt.Println(workerCount)
 
 	// Open the ZIP file
