@@ -148,6 +148,10 @@ jobs:
           rm -f "${{ github.workspace }}/$FILENAME"
           df -h
 
+      - name: SELECT COUNT(KoeretoejIdent)
+        run: |
+          /usr/bin/mariadb -N -s -e "SELECT COUNT(KoeretoejIdent) FROM koeretoej;"
+
       - name: Dump the entire database
         run: |
           /usr/bin/mariadb-dump --databases bilgaden_new_new | gzip > ${{ github.workspace }}/bilgaden_new_new.sql.gz
