@@ -10,7 +10,7 @@ import (
 	// "io/ioutil"
 	"sync"
 	"sync/atomic"
-	// "runtime"
+	"runtime"
 	"strings"
 	"time"
 
@@ -486,7 +486,8 @@ func main() {
 
 	var total int64
 
-	workerCount := 32
+	workerCount := runtime.NumCPU()
+	fmt.Println(workerCount)
 
 	// Open the ZIP file
 	zipFile, err := zip.OpenReader("ESStatistikListeModtag-20250420-165437.zip")
