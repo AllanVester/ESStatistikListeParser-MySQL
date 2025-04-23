@@ -150,7 +150,7 @@ jobs:
 
       - name: SELECT COUNT(KoeretoejIdent)
         run: |
-          /usr/bin/mariadb -N -s -e "SELECT COUNT(KoeretoejIdent) FROM koeretoej;"
+          /usr/bin/mariadb -N -s -e "USE bilgaden_new_new; SELECT COUNT(KoeretoejIdent) FROM koeretoej;"
 
       - name: Dump the entire database
         run: |
