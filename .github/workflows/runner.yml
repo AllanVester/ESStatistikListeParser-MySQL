@@ -1,0 +1,177 @@
+name: Runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      filename:
+        description: 'ESStatistikListeModtag Filename'
+        required: true
+        type: string
+      filename-no-suffix:
+        description: 'ESStatistikListeModtag Filename (No Suffix)'
+        required: true
+        type: string
+      discord-upload-limit:
+        description: 'Discord Upload Limit (In MiB)'
+        required: true
+        type: string
+      github-upload-limit:
+        description: 'GitHub Upload Limit (In MiB)'
+        required: true
+        type: string
+
+jobs:
+  mysql:
+    name: Run MySQL
+    runs-on: ubuntu-latest
+    steps:
+      - name: Maximize build space
+        uses: AdityaGarg8/remove-unwanted-software@v5
+        with:
+          remove-dotnet: "true"
+          remove-android: "true"
+          remove-haskell: "true"
+          remove-codeql: "true"
+          remove-docker-images: "true"
+          remove-cached-tools: "true"
+          remove-swapfile: "true"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: "AllanVester/ESStatistikListeParser-GitHub"
+          ref: "main"
+          path: "${{ github.workspace }}/"
+          sparse-checkout: |
+            /Bilgaden.sql
+            /Branch-GitHub.py
+            /go.mod
+            /go.sum
+            /MySQL-GitHub.go
+            /UploadToDiscord-GitHub.py
+          sparse-checkout-cone-mode: false
+          token: "${{ secrets.PAT }}"
+
+      - name: Checkout ESStatistikListeModtag repository
+        uses: actions/checkout@v4
+        with:
+          repository: "AllanVester/ESStatistikListeModtag"
+          ref: "main"
+          path: "${{ github.workspace }}/temp/"
+          sparse-checkout: |
+            /ESStatistikListeModtag
+          sparse-checkout-cone-mode: false
+          token: "${{ secrets.PAT }}"
+
+      - name: Set up MySQL
+        uses: ankane/setup-mariadb@v1
+        
+      - name: Import schema into MySQL
+        run: |
+          /usr/bin/mariadb < "Bilgaden.sql"
+
+      - name: Tune MySQL buffer pool size
+        run: |
+          /usr/bin/mariadb -e "SET GLOBAL innodb_buffer_pool_size = 14 * 1024 * 1024 * 1024;"
+
+      - name: Stitch files back together
+        run: |
+          cat ${{ github.workspace }}/temp/ESStatistikListeModtag/*.part* > "${{ github.workspace }}/${{ inputs.filename }}"
+          file "${{ github.workspace }}/${{ inputs.filename }}"
+          
+          rm -rf ${{ github.workspace }}/temp/
+
+      - name: Checkout ESStatistikListeModtag repository (MySQL-branch)
+        uses: actions/checkout@v4
+        with:
+          repository: "AllanVester/ESStatistikListeModtag"
+          ref: "mysql"
+          path: "${{ github.workspace }}/temp/"
+          sparse-checkout: |
+            !/*
+          sparse-checkout-cone-mode: false
+          token: "${{ secrets.PAT }}"
+
+      - name: Set up Git
+        working-directory: "${{ github.workspace }}/temp/"
+        run: |
+          gh auth login --with-token <<< "${{ secrets.PAT }}"
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global http.postBuffer 104857600
+          
+          if git ls-remote --exit-code --heads origin ${{ inputs.filename }}-mysql; then
+              echo "Branch already exists, deleting and recreating..."
+              
+              if git show-ref --verify --quiet refs/heads/${{ inputs.filename }}-mysql; then
+                  git branch -D ${{ inputs.filename }}-mysql
+              fi
+              git push origin --delete ${{ inputs.filename }}-mysql
+              git checkout -b ${{ inputs.filename }}-mysql
+          else
+              echo "Branch does not exist, creating..."
+              
+              git checkout -b ${{ inputs.filename }}-mysql
+          fi
+
+          git push -u origin ${{ inputs.filename }}-mysql
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.21
+
+      - name: Install Go dependencies
+        run: |
+          go mod tidy
+
+      - name: Run MySQL Go script
+        run: |
+          go run ${{ github.workspace }}/MySQL-GitHub.go
+
+          rm -f "${{ github.workspace }}/${{ inputs.filename }}"
+        env:
+          NUMBER_OF_WORKERS: 32  
+
+      - name: Dump the entire database
+        run: |
+          /usr/bin/mariadb-dump --databases bilgaden | gzip > ${{ github.workspace }}/bilgaden.sql.gz
+    
+      - name: Archive SQL file
+        run: |
+          mkdir -p ${{ github.workspace }}/mysql-zip
+          zip -j -r -s ${{ inputs.discord-upload-limit }}m ${{ github.workspace }}/mysql-zip/${{ inputs.filename-no-suffix }}.sql.gz.zip ${{ github.workspace }}/bilgaden.sql.gz
+
+      - name: Split SQL file
+        run: |
+          mkdir -p ${{ github.workspace }}/mysql-split
+          split -d -b ${{ inputs.discord-upload-limit }}m ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/mysql-split/${{ inputs.filename-no-suffix }}.sql.gz.part
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: |
+          pip install pymongo discord-webhook
+
+      - name: Upload SQL file to GitHub MySQL-branch
+        working-directory: "${{ github.workspace }}/temp/"
+        run: |
+          mv ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/temp/bilgaden.sql.gz
+          mv ${{ github.workspace }}/Branch-GitHub.py ${{ github.workspace }}/temp/Branch-GitHub.py
+          
+          python ${{ github.workspace }}/temp/Branch-GitHub.py mysql
+        env:
+          FILENAME: "bilgaden.sql.gz"
+          FILEPATH: "${{ github.workspace }}/temp/"
+          BRANCHNAME: "${{ inputs.filename }}-mysql"
+          GITHUB_UPLOAD_LIMIT: "${{ inputs.github-upload-limit }}"
+
+      - name: Upload SQL file to Discord
+        run: |
+          python ${{ github.workspace }}/UploadToDiscord-GitHub.py mysql
+        env:
+          FILENAME: "${{ inputs.filename-no-suffix }}.sql.gz"
