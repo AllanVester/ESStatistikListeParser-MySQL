@@ -144,7 +144,7 @@ jobs:
 
           rm -f "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.zip"
         env:
-          NUMBER_OF_WORKERS: 96  
+          NUMBER_OF_WORKERS: 128
 
       - name: Dump the entire database
         run: |
