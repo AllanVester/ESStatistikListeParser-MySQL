@@ -140,6 +140,8 @@ jobs:
 
       - name: Run MySQL Go script
         run: |
+          df -h
+        
           go run ${{ github.workspace }}/MySQL-GitHub.go
 
           rm -f "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.zip"
