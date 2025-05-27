@@ -84,7 +84,7 @@ jobs:
 
       - name: Tune MySQL buffer pool size
         run: |
-          /usr/bin/mariadb -e "SET GLOBAL innodb_buffer_pool_size = 50 * 1024 * 1024 * 1024;"
+          /usr/bin/mariadb -e "SET GLOBAL innodb_buffer_pool_size = 100 * 1024 * 1024 * 1024;"
 
       - name: Stitch files back together
         run: |
