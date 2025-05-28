@@ -145,8 +145,8 @@ jobs:
           rm -f "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.zip"
         env:
           NUMBER_OF_WORKERS: 32
-          START_COUNT: 10000000
-          END_COUNT: 15000000
+          START_COUNT: 5000000
+          END_COUNT: 10000000
 
       - name: Dump the entire database
         run: |
