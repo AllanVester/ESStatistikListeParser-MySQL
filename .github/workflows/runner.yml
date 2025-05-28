@@ -145,6 +145,8 @@ jobs:
           rm -f "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.zip"
         env:
           NUMBER_OF_WORKERS: 32
+          START_COUNT: 0
+          END_COUNT: 3000000
 
       - name: Dump the entire database
         run: |
@@ -160,31 +162,31 @@ jobs:
           mkdir -p ${{ github.workspace }}/mysql-split
           split -d -b ${{ inputs.discord-upload-limit }}m ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/mysql-split/${{ inputs.filename-no-suffix }}.sql.gz.part
 
-      - name: Install Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+      # - name: Install Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.x'
 
-      - name: Install Python dependencies
-        run: |
-          pip install pymongo discord-webhook
+      # - name: Install Python dependencies
+      #   run: |
+      #     pip install pymongo discord-webhook
 
-      - name: Upload SQL file to GitHub MySQL-branch
-        working-directory: "${{ github.workspace }}/temp/"
-        run: |
-          mv ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/temp/bilgaden.sql.gz
-          mv ${{ github.workspace }}/Branch-GitHub.py ${{ github.workspace }}/temp/Branch-GitHub.py
+      # - name: Upload SQL file to GitHub MySQL-branch
+      #   working-directory: "${{ github.workspace }}/temp/"
+      #   run: |
+      #     mv ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/temp/bilgaden.sql.gz
+      #     mv ${{ github.workspace }}/Branch-GitHub.py ${{ github.workspace }}/temp/Branch-GitHub.py
           
-          python ${{ github.workspace }}/temp/Branch-GitHub.py mysql
-        env:
-          FILENAME: "bilgaden.sql.gz"
-          FILENAME_NO_SUFFIX: "${{ inputs.filename-no-suffix }}"
-          FILEPATH: "${{ github.workspace }}/temp/"
-          BRANCHNAME: "${{ inputs.filename-no-suffix }}.zip-mysql"
-          GITHUB_UPLOAD_LIMIT: "${{ inputs.github-upload-limit }}"
+      #     python ${{ github.workspace }}/temp/Branch-GitHub.py mysql
+      #   env:
+      #     FILENAME: "bilgaden.sql.gz"
+      #     FILENAME_NO_SUFFIX: "${{ inputs.filename-no-suffix }}"
+      #     FILEPATH: "${{ github.workspace }}/temp/"
+      #     BRANCHNAME: "${{ inputs.filename-no-suffix }}.zip-mysql"
+      #     GITHUB_UPLOAD_LIMIT: "${{ inputs.github-upload-limit }}"
 
-      - name: Upload SQL file to Discord
-        run: |
-          python ${{ github.workspace }}/UploadToDiscord-GitHub.py mysql
-        env:
-          FILENAME: "${{ inputs.filename-no-suffix }}.sql.gz"
+      # - name: Upload SQL file to Discord
+      #   run: |
+      #     python ${{ github.workspace }}/UploadToDiscord-GitHub.py mysql
+      #   env:
+      #     FILENAME: "${{ inputs.filename-no-suffix }}.sql.gz"
