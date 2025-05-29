@@ -146,7 +146,7 @@ jobs:
         env:
           NUMBER_OF_WORKERS: 32
           START_COUNT: 0
-          END_COUNT: 5000000
+          END_COUNT: 4000000
 
       - name: Dump the entire database
         run: |
