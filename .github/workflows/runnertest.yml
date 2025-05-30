@@ -114,8 +114,10 @@ jobs:
           token: "${{ secrets.PAT }}"
 
       - name: Stitch SQL back together
+        working-directory: "${{ github.workspace }}/temp/"
         if: ${{ fromJSON(github.event.inputs['runner-number']) > 1 }}
         run: |
+          ls -h
           cat ${{ github.workspace }}/temp/*.part* > "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql"
           file "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql"
           
