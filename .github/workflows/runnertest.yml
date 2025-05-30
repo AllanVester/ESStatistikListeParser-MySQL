@@ -19,6 +19,14 @@ on:
         description: 'GitHub Upload Limit (In MiB)'
         required: true
         type: string
+      start-count:
+        description: 'Start Count'
+        required: true
+        type: string
+      step-count:
+        description: 'Step Count'
+        required: true
+        type: string
       runner-number:
         description: 'Runner Number State'
         required: true
@@ -45,6 +53,8 @@ jobs:
         run: |
           echo "PREV_RUNNER=$(( ${{ github.event.inputs['runner-number'] }} - 1 ))" >> $GITHUB_ENV
           echo "NEXT_RUNNER=$(( ${{ github.event.inputs['runner-number'] }} + 1 ))" >> $GITHUB_ENV
+          echo "NEXT_START_COUNT=$(( ${{ github.event.inputs['start-count'] }} ))" >> $GITHUB_ENV
+          echo "NEXT_END_COUNT=$(( ${{ github.event.inputs['start-count'] }} + ${{ github.event.inputs['step-count'] }} ))" >> $GITHUB_ENV
           echo "XML_PARSE_COMPLETE=false" >> $GITHUB_ENV
           
       # - name: Maximize build space
@@ -181,12 +191,8 @@ jobs:
           rm -f "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.zip"
         env:
           NUMBER_OF_WORKERS: 32
-          START_COUNT: 5000
-          END_COUNT: 6000
-
-      - name: Next step sees our flag
-        run: |
-          echo "Parsing done? ${{ env.XML_PARSE_COMPLETE }}"
+          START_COUNT: ${{ env.NEXT_START_COUNT }}
+          END_COUNT: ${{ env.NEXT_END_COUNT }}
 
       - name: Dump the entire database
         run: |
@@ -204,7 +210,7 @@ jobs:
           git push
 
       - name: Trigger next run
-        if: ${{ env.XML_PARSE_COMPLETE == 'true' }}
+        if: ${{ env.XML_PARSE_COMPLETE == 'false' }}
         uses: actions/github-script@v6
         with:
           script: |
@@ -217,6 +223,8 @@ jobs:
                 'filename-no-suffix': '${{ inputs.filename-no-suffix }}',
                 'discord-upload-limit': '${{ inputs.discord-upload-limit }}',
                 'github-upload-limit': '${{ inputs.github-upload-limit }}',
+                'start-count': '${{ env.NEXT_START_COUNT }}',
+                'end-count': '${{ env.NEXT_END_COUNT }}',
                 'runner-number': '${{ env.NEXT_RUNNER }}'
               }
             })
