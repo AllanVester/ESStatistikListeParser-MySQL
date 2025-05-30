@@ -13,14 +13,17 @@ on:
         type: string
       discord-upload-limit:
         description: 'Discord Upload Limit (In MiB)'
+        default: '500'
         required: true
         type: string
       github-upload-limit:
         description: 'GitHub Upload Limit (In MiB)'
+        default: '100'
         required: true
         type: string
       start-count:
         description: 'Start Count'
+        default: '0'
         required: true
         type: string
       step-count:
@@ -29,6 +32,7 @@ on:
         type: string
       runner-number:
         description: 'Runner Number State'
+        default: '0'
         required: true
         type: string
 
