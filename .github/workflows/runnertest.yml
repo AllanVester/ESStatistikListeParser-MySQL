@@ -210,6 +210,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'runnertest.yml',
+              ref: 'main',
               inputs: {
                 'filename-no-suffix': '${{ inputs.filename-no-suffix }}',
                 'discord-upload-limit': '${{ inputs.discord-upload-limit }}',
