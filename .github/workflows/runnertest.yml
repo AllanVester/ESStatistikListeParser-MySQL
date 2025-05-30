@@ -44,6 +44,7 @@ jobs:
       - name: Calculate previous runner index
         run: |
           echo "PREV_RUNNER=$(( ${{ github.event.inputs['runner-number'] }} - 1 ))" >> $GITHUB_ENV
+          echo "NEXT_RUNNER=$(( ${{ github.event.inputs['runner-number'] }} + 1 ))" >> $GITHUB_ENV
           
       # - name: Maximize build space
       #   uses: AdityaGarg8/remove-unwanted-software@v5
@@ -179,8 +180,12 @@ jobs:
           rm -f "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.zip"
         env:
           NUMBER_OF_WORKERS: 32
-          START_COUNT: 2000
-          END_COUNT: 3000
+          START_COUNT: 3000
+          END_COUNT: 4000
+
+      - name: Next step sees our flag
+        run: |
+          echo "Parsing done? ${{ env.XML_PARSE_COMPLETE }}"
 
       - name: Dump the entire database
         run: |
@@ -196,6 +201,23 @@ jobs:
           git add --sparse .
           git commit -m "Uploaded mysql-temp-${{ inputs.runner-number }}"
           git push
+
+      - name: Trigger next run
+        uses: actions/github-script@v6
+        with:
+          script: |
+            await github.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'runnertest.yml',
+              inputs: {
+                'filename-no-suffix': '${{ inputs.filename-no-suffix }}',
+                'discord-upload-limit': '${{ inputs.discord-upload-limit }}',
+                'github-upload-limit': '${{ inputs.github-upload-limit }}',
+                'runner-number': '${{ env.NEXT_RUNNER }}'
+              }
+            })
+          github-token: ${{ secrets.PAT }}
 
       # - name: Install Python
       #   uses: actions/setup-python@v5
