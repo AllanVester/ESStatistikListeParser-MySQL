@@ -228,7 +228,7 @@ jobs:
                 'discord-upload-limit': '${{ inputs.discord-upload-limit }}',
                 'github-upload-limit': '${{ inputs.github-upload-limit }}',
                 'start-count': '${{ env.NEXT_START_COUNT }}',
-                'end-count': '${{ env.NEXT_END_COUNT }}',
+                'step-count': '${{ inputs.step-count }}',
                 'runner-number': '${{ env.NEXT_RUNNER }}'
               }
             })
