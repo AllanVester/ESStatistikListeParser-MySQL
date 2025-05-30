@@ -123,9 +123,9 @@ jobs:
       - name: Import SQL into MySQL
         if: ${{ fromJSON(github.event.inputs['runner-number']) > 1 }}
         run: |
-          gzip -d "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql.gz"
-          cat "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql"
-          gunzip -c "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql.gz" | /usr/bin/mariadb
+          #gzip -d "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql.gz"
+          #cat "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql"
+          gunzip -c "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql.gz" | /usr/bin/mariadb -p bilgaden
 
       - name: Checkout ESStatistikListeModtag repository (MySQL-branch)
         uses: actions/checkout@v4
