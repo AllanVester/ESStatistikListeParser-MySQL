@@ -153,7 +153,7 @@ jobs:
           sparse-checkout-cone-mode: false
           token: "${{ secrets.PAT }}"
 
-      - name: Set up Git
+      - name: Set up Git for temporary files
         working-directory: "${{ github.workspace }}/temp/"
         run: |
           gh auth login --with-token <<< "${{ secrets.PAT }}"
@@ -201,11 +201,13 @@ jobs:
         run: |
           /usr/bin/mariadb-dump --no-create-db --databases bilgaden | gzip > ${{ github.workspace }}/bilgaden.sql.gz
     
-      - name: Split SQL file into temp directory
+      - name: Split SQL file into temp-directory
+        if: ${{ env.XML_PARSE_COMPLETE == 'false' }}
         run: |
           split -d -b ${{ inputs.discord-upload-limit }}m ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/temp/${{ inputs.filename-no-suffix }}.sql.gz.part
 
       - name: Upload SQL file to GitHub MySQL-temp-branch
+        if: ${{ env.XML_PARSE_COMPLETE == 'false' }}
         working-directory: "${{ github.workspace }}/temp/"
         run: |
           git add --sparse .
@@ -233,31 +235,90 @@ jobs:
             })
           github-token: ${{ secrets.PAT }}
 
-      # - name: Install Python
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version: '3.x'
+      - name: Remove temp-directory
+        if: ${{ env.XML_PARSE_COMPLETE == 'true' }}
+        run: |
+          rm -rf ${{ github.workspace }}/temp/
 
-      # - name: Install Python dependencies
-      #   run: |
-      #     pip install pymongo discord-webhook
+      - name: Checkout ESStatistikListeModtag repository (MySQL-branch)
+        if: ${{ env.XML_PARSE_COMPLETE == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          repository: "${{ github.repository_owner }}/${{ inputs.filename-no-suffix }}"
+          ref: "mysql"
+          path: "${{ github.workspace }}/temp/"
+          sparse-checkout: |
+            !/*
+          sparse-checkout-cone-mode: false
+          token: "${{ secrets.PAT }}"
 
-      # - name: Upload SQL file to GitHub MySQL-branch
-      #   working-directory: "${{ github.workspace }}/temp/"
-      #   run: |
-      #     mv ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/temp/bilgaden.sql.gz
-      #     mv ${{ github.workspace }}/Branch-GitHub.py ${{ github.workspace }}/temp/Branch-GitHub.py
+      - name: Set up Git
+        if: ${{ env.XML_PARSE_COMPLETE == 'true' }}
+        working-directory: "${{ github.workspace }}/temp/"
+        run: |
+          gh auth login --with-token <<< "${{ secrets.PAT }}"
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global http.postBuffer 104857600
           
-      #     python ${{ github.workspace }}/temp/Branch-GitHub.py mysql
-      #   env:
-      #     FILENAME: "bilgaden.sql.gz"
-      #     FILENAME_NO_SUFFIX: "${{ inputs.filename-no-suffix }}"
-      #     FILEPATH: "${{ github.workspace }}/temp/"
-      #     BRANCHNAME: "${{ inputs.filename-no-suffix }}.zip-mysql"
-      #     GITHUB_UPLOAD_LIMIT: "${{ inputs.github-upload-limit }}"
+          if git ls-remote --exit-code --heads origin ${{ inputs.filename-no-suffix }}.zip-mysql; then
+              echo "Branch '${{ inputs.filename-no-suffix }}.zip-mysql' already exists, deleting and recreating..."
+              
+              if git show-ref --verify --quiet refs/heads/${{ inputs.filename-no-suffix }}.zip-mysql; then
+                  git branch -D ${{ inputs.filename-no-suffix }}.zip-mysql
+              fi
+              git push origin --delete ${{ inputs.filename-no-suffix }}.zip-mysql
+              git checkout -b ${{ inputs.filename-no-suffix }}.zip-mysql
+          else
+              echo "Branch '${{ inputs.filename-no-suffix }}.zip-mysql' does not exist, creating..."
+              
+              git checkout -b ${{ inputs.filename-no-suffix }}.zip-mysql
+          fi
 
-      # - name: Upload SQL file to Discord
-      #   run: |
-      #     python ${{ github.workspace }}/UploadToDiscord-GitHub.py mysql
-      #   env:
-      #     FILENAME: "${{ inputs.filename-no-suffix }}.sql.gz"
+          git push -u origin ${{ inputs.filename-no-suffix }}.zip-mysql
+
+      - name: Archive SQL file
+        if: ${{ env.XML_PARSE_COMPLETE == 'true' }}
+        run: |
+          mkdir -p ${{ github.workspace }}/mysql-zip
+          zip -j -r -s ${{ inputs.discord-upload-limit }}m ${{ github.workspace }}/mysql-zip/${{ inputs.filename-no-suffix }}.sql.gz.zip ${{ github.workspace }}/bilgaden.sql.gz
+
+      - name: Split SQL file
+        if: ${{ env.XML_PARSE_COMPLETE == 'true' }}
+        run: |
+          mkdir -p ${{ github.workspace }}/mysql-split
+          split -d -b ${{ inputs.discord-upload-limit }}m ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/mysql-split/${{ inputs.filename-no-suffix }}.sql.gz.part
+
+      - name: Install Python
+        if: ${{ env.XML_PARSE_COMPLETE == 'true' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        if: ${{ env.XML_PARSE_COMPLETE == 'true' }}
+        run: |
+          pip install pymongo discord-webhook
+
+      - name: Upload SQL file to GitHub MySQL-branch
+        if: ${{ env.XML_PARSE_COMPLETE == 'true' }}
+        working-directory: "${{ github.workspace }}/temp/"
+        run: |
+          mv ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/temp/bilgaden.sql.gz
+          mv ${{ github.workspace }}/Branch-GitHub.py ${{ github.workspace }}/temp/Branch-GitHub.py
+          
+          python ${{ github.workspace }}/temp/Branch-GitHub.py mysql
+        env:
+          FILENAME: "bilgaden.sql.gz"
+          FILENAME_NO_SUFFIX: "${{ inputs.filename-no-suffix }}"
+          FILEPATH: "${{ github.workspace }}/temp/"
+          BRANCHNAME: "${{ inputs.filename-no-suffix }}.zip-mysql"
+          GITHUB_UPLOAD_LIMIT: "${{ inputs.github-upload-limit }}"
+
+      - name: Upload SQL file to Discord
+        if: ${{ env.XML_PARSE_COMPLETE == 'true' }}
+        run: |
+          python ${{ github.workspace }}/UploadToDiscord-GitHub.py mysql
+        env:
+          FILENAME: "${{ inputs.filename-no-suffix }}.sql.gz"
