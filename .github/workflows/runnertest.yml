@@ -41,16 +41,16 @@ jobs:
           echo "release:        $(grep '^VERSION_ID=' /etc/os-release | head -1 | cut -d= -f2- | tr -d '\"')"
           echo "total-memory:   $(grep MemTotal /proc/meminfo | awk '{print $2 * 1024}')"
           
-      - name: Maximize build space
-        uses: AdityaGarg8/remove-unwanted-software@v5
-        with:
-          remove-dotnet: "true"
-          remove-android: "true"
-          remove-haskell: "true"
-          remove-codeql: "true"
-          remove-docker-images: "true"
-          remove-cached-tools: "true"
-          remove-swapfile: "true"
+      # - name: Maximize build space
+      #   uses: AdityaGarg8/remove-unwanted-software@v5
+      #   with:
+      #     remove-dotnet: "true"
+      #     remove-android: "true"
+      #     remove-haskell: "true"
+      #     remove-codeql: "true"
+      #     remove-docker-images: "true"
+      #     remove-cached-tools: "true"
+      #     remove-swapfile: "true"
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -156,10 +156,9 @@ jobs:
         run: |
           /usr/bin/mariadb-dump --databases bilgaden | gzip > ${{ github.workspace }}/bilgaden.sql.gz
     
-      - name: Split SQL file
+      - name: Split SQL file into temp directory
         run: |
-          mkdir -p ${{ github.workspace }}/mysql-split
-          split -d -b ${{ inputs.discord-upload-limit }}m ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/mysql-split/${{ inputs.filename-no-suffix }}.sql.gz.part
+          split -d -b ${{ inputs.discord-upload-limit }}m ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/temp/${{ inputs.filename-no-suffix }}.sql.gz.part
 
       - name: Upload SQL file to GitHub MySQL-temp-branch
         working-directory: "${{ github.workspace }}/temp/"
