@@ -118,7 +118,7 @@ jobs:
           rm -rf ${{ github.workspace }}/temp/
 
       - name: Checkout ESStatistikListeModtag repository (MySQL-temp-branch)
-        if: ${{ fromJSON(github.event.inputs['runner-number']) > 1 }}
+        if: ${{ fromJSON(github.event.inputs['runner-number']) > 0 }}
         uses: actions/checkout@v4
         with:
           repository: "${{ github.repository_owner }}/${{ inputs.filename-no-suffix }}"
@@ -128,7 +128,7 @@ jobs:
 
       - name: Stitch SQL back together
         working-directory: "${{ github.workspace }}/temp/"
-        if: ${{ fromJSON(github.event.inputs['runner-number']) > 1 }}
+        if: ${{ fromJSON(github.event.inputs['runner-number']) > 0 }}
         run: |
           ls -h
           cat ${{ github.workspace }}/temp/*.part* > "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql.gz"
@@ -137,7 +137,7 @@ jobs:
           rm -rf ${{ github.workspace }}/temp/
 
       - name: Import SQL into MySQL
-        if: ${{ fromJSON(github.event.inputs['runner-number']) > 1 }}
+        if: ${{ fromJSON(github.event.inputs['runner-number']) > 0 }}
         run: |
           #gzip -d "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql.gz"
           #cat "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql"
