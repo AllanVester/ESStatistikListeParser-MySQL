@@ -181,8 +181,8 @@ jobs:
           rm -f "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.zip"
         env:
           NUMBER_OF_WORKERS: 32
-          START_COUNT: 4000
-          END_COUNT: 5000
+          START_COUNT: 5000
+          END_COUNT: 6000
 
       - name: Next step sees our flag
         run: |
@@ -208,7 +208,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            await github.actions.createWorkflowDispatch({
+            await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'runnertest.yml',
