@@ -180,7 +180,7 @@ jobs:
         env:
           NUMBER_OF_WORKERS: 32
           START_COUNT: 0
-          END_COUNT: 1000
+          END_COUNT: 2000
 
       - name: Dump the entire database
         run: |
