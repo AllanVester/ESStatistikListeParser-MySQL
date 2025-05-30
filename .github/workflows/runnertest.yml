@@ -53,7 +53,7 @@ jobs:
           echo "release:        $(grep '^VERSION_ID=' /etc/os-release | head -1 | cut -d= -f2- | tr -d '\"')"
           echo "total-memory:   $(grep MemTotal /proc/meminfo | awk '{print $2 * 1024}')"
 
-      - name: Calculate previous runner index
+      - name: Set environment variables
         run: |
           echo "PREV_RUNNER=$(( ${{ github.event.inputs['runner-number'] }} - 1 ))" >> $GITHUB_ENV
           echo "NEXT_RUNNER=$(( ${{ github.event.inputs['runner-number'] }} + 1 ))" >> $GITHUB_ENV
