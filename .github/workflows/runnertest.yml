@@ -57,8 +57,7 @@ jobs:
         run: |
           echo "PREV_RUNNER=$(( ${{ github.event.inputs['runner-number'] }} - 1 ))" >> $GITHUB_ENV
           echo "NEXT_RUNNER=$(( ${{ github.event.inputs['runner-number'] }} + 1 ))" >> $GITHUB_ENV
-          echo "NEXT_START_COUNT=$(( ${{ github.event.inputs['start-count'] }} ))" >> $GITHUB_ENV
-          echo "NEXT_END_COUNT=$(( ${{ github.event.inputs['start-count'] }} + ${{ github.event.inputs['step-count'] }} ))" >> $GITHUB_ENV
+          echo "NEXT_START_COUNT=$(( ${{ github.event.inputs['start-count'] }} + ${{ github.event.inputs['step-count'] }} ))" >> $GITHUB_ENV
           echo "XML_PARSE_COMPLETE=false" >> $GITHUB_ENV
           
       # - name: Maximize build space
@@ -195,8 +194,8 @@ jobs:
           rm -f "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.zip"
         env:
           NUMBER_OF_WORKERS: 32
-          START_COUNT: ${{ env.NEXT_START_COUNT }}
-          END_COUNT: ${{ env.NEXT_END_COUNT }}
+          START_COUNT: ${{ inputs.start-count }}
+          END_COUNT: ${{ env.NEXT_START_COUNT }}
 
       - name: Dump the entire database
         run: |
