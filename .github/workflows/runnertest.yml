@@ -108,9 +108,6 @@ jobs:
           repository: "${{ github.repository_owner }}/${{ inputs.filename-no-suffix }}"
           ref: "${{ inputs.filename-no-suffix }}.zip-mysql-temp-${{ env.PREV_RUNNER }}"
           path: "${{ github.workspace }}/temp/"
-          sparse-checkout: |
-            !/*
-          sparse-checkout-cone-mode: false
           token: "${{ secrets.PAT }}"
 
       - name: Stitch SQL back together
