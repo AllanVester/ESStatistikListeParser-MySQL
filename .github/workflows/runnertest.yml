@@ -40,6 +40,10 @@ jobs:
           echo "platform:       $(uname -s)"
           echo "release:        $(grep '^VERSION_ID=' /etc/os-release | head -1 | cut -d= -f2- | tr -d '\"')"
           echo "total-memory:   $(grep MemTotal /proc/meminfo | awk '{print $2 * 1024}')"
+
+      - name: Calculate previous runner index
+        run: |
+          echo "PREV_RUNNER=$(( ${{ github.event.inputs['runner-number'] }} - 1 ))" >> $GITHUB_ENV
           
       # - name: Maximize build space
       #   uses: AdityaGarg8/remove-unwanted-software@v5
@@ -102,7 +106,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: "${{ github.repository_owner }}/${{ inputs.filename-no-suffix }}"
-          ref: "${{ inputs.filename-no-suffix }}.zip-mysql-temp-${{ fromJSON(github.event.inputs['runner-number']) - 1 }}"
+          ref: "${{ inputs.filename-no-suffix }}.zip-mysql-temp-${{ env.PREV_RUNNER }}"
           path: "${{ github.workspace }}/temp/"
           sparse-checkout: |
             !/*
