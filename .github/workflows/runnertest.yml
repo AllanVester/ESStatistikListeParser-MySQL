@@ -163,7 +163,7 @@ jobs:
       - name: Upload SQL file to GitHub MySQL-temp-branch
         working-directory: "${{ github.workspace }}/temp/"
         run: |
-          git add .
+          git add --sparse .
           git commit -m "Uploaded mysql-temp-${{ inputs.runner-number }}"
           git push
 
