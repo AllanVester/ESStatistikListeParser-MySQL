@@ -125,7 +125,7 @@ jobs:
         run: |
           #gzip -d "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql.gz"
           #cat "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql"
-          gunzip -c "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql.gz" | /usr/bin/mariadb -u root
+          gunzip -c "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql.gz" | /usr/bin/mariadb
 
       - name: Checkout ESStatistikListeModtag repository (MySQL-branch)
         uses: actions/checkout@v4
