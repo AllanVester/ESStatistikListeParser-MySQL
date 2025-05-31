@@ -60,16 +60,16 @@ jobs:
           echo "NEXT_START_COUNT=$(( ${{ github.event.inputs['start-count'] }} + ${{ github.event.inputs['step-count'] }} ))" >> $GITHUB_ENV
           echo "XML_PARSE_COMPLETE=false" >> $GITHUB_ENV
           
-      # - name: Maximize build space
-      #   uses: AdityaGarg8/remove-unwanted-software@v5
-      #   with:
-      #     remove-dotnet: "true"
-      #     remove-android: "true"
-      #     remove-haskell: "true"
-      #     remove-codeql: "true"
-      #     remove-docker-images: "true"
-      #     remove-cached-tools: "true"
-      #     remove-swapfile: "true"
+      - name: Maximize build space
+        uses: AdityaGarg8/remove-unwanted-software@v5
+        with:
+          remove-dotnet: "true"
+          remove-android: "true"
+          remove-haskell: "true"
+          remove-codeql: "true"
+          remove-docker-images: "true"
+          remove-cached-tools: "true"
+          remove-swapfile: "true"
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -138,9 +138,9 @@ jobs:
       - name: Import SQL into MySQL
         if: ${{ fromJSON(github.event.inputs['runner-number']) > 0 }}
         run: |
-          #gzip -d "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql.gz"
-          #cat "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql"
           gunzip -c "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql.gz" | /usr/bin/mariadb
+          
+          rm -f "${{ github.workspace }}/${{ inputs.filename-no-suffix }}.sql.gz"
 
       - name: Checkout ESStatistikListeModtag repository (MySQL-branch)
         uses: actions/checkout@v4
