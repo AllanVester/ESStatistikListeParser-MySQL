@@ -204,7 +204,7 @@ jobs:
       - name: Split SQL file into temp-directory
         if: ${{ env.XML_PARSE_COMPLETE == 'false' }}
         run: |
-          split -d -b ${{ inputs.discord-upload-limit }}m ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/temp/${{ inputs.filename-no-suffix }}.sql.gz.part
+          split -d -b ${{ inputs.github-upload-limit }}m ${{ github.workspace }}/bilgaden.sql.gz ${{ github.workspace }}/temp/${{ inputs.filename-no-suffix }}.sql.gz.part
 
       - name: Upload SQL file to GitHub MySQL-temp-branch
         if: ${{ env.XML_PARSE_COMPLETE == 'false' }}
